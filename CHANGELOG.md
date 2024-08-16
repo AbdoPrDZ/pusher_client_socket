@@ -6,3 +6,9 @@
 * Bind event listeners to handle custom and Pusher-specific events.
 * Automatic reconnection logic for handling connection interruptions.
 * Activity check mechanism to ensure the connection remains active.
+
+## 0.0.1+1 - 2024-08-16 21:04
+
+* Handle `pusher_internal:` and `pusher:` events.
+* Add `onSubscriptionSuccess` event for all channels.
+* Upgrade `web_socket_client` to `^0.1.0`.

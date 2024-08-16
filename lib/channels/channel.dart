@@ -74,4 +74,8 @@ class Channel {
     client.sendEvent("pusher:unsubscribe", {"channel": name});
     _subscribed = false;
   }
+
+  /// Binding for the subscription success event.
+  void onSubscriptionSuccess(Function listener) =>
+      bind("pusher:subscription_succeeded", listener);
 }

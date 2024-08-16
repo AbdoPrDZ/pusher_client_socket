@@ -100,13 +100,9 @@ class PrivateChannel extends Channel {
     _subscriptionCount = data["subscription_count"];
   }
 
-  /// Binding for the subscription success event.
-  void onSubscriptionSuccess(Function listener) =>
-      bind("pusher_internal:subscription_succeeded", listener);
-
   /// Binding for the subscription count event.
   void onSubscriptionCount(Function listener) =>
-      bind("pusher_internal:subscription_count", listener);
+      bind("pusher:subscription_count", listener);
 
   /// Send an event to the channel.
   void trigger(String event, [data]) {

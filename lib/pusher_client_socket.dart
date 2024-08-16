@@ -191,7 +191,10 @@ class PusherClient {
 
     if (event is Map) {
       if (event.containsKey('event')) {
-        String eventName = event['event'];
+        String eventName = event['event'].replaceAll(
+          'pusher_internal:',
+          'pusher:',
+        );
         dynamic data = event['data'];
 
         if (data is String) {

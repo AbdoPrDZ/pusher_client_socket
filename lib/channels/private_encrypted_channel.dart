@@ -26,7 +26,7 @@ class PrivateEncryptedChannel extends PrivateChannel {
   /// Handles the event by decrypting the data before passing it to the event
   @override
   void handleEvent(String event, [data]) {
-    if (data is Map && !event.startsWith("pusher_internal:")) {
+    if (data is Map && !event.startsWith("pusher:")) {
       try {
         data = _decrypt(data as Map<String, dynamic>);
       } catch (e) {
