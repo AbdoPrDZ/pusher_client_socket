@@ -1,35 +1,47 @@
 import '../pusher_client_socket.dart';
 import '../utils/collection.dart';
 
+/// Represents a collection of channels in Pusher.
 class ChannelsCollection extends Collection<Channel> {
+  /// The pusher client.
   final PusherClient client;
 
   ChannelsCollection(this.client);
 
-  T channel<T extends Channel>(String channelName) {
+  /// Gets a channel by its name (Create it if not exists).
+  T channel<T extends Channel>(String channelName, {bool subscribe = false}) {
     if (!contains(channelName)) {
       if (channelName.startsWith("private-encrypted-")) {
-        channelName = channelName.replaceFirst("private-encrypted-", "");
         add(
           channelName,
-          PrivateEncryptedChannel(client: client, name: channelName),
+          PrivateEncryptedChannel(
+            client: client,
+            name: channelName,
+            subscribe: subscribe,
+          ),
         );
       } else if (channelName.startsWith("private-")) {
-        channelName = channelName.replaceFirst("private-", "");
         add(
           channelName,
-          PrivateChannel(client: client, name: channelName),
+          PrivateChannel(
+            client: client,
+            name: channelName,
+            subscribe: subscribe,
+          ),
         );
       } else if (channelName.startsWith("presence-")) {
-        // channelName = channelName.replaceFirst("presence-", "");
         add(
           channelName,
-          PresenceChannel(client: client, name: channelName),
+          PresenceChannel(
+            client: client,
+            name: channelName,
+            subscribe: subscribe,
+          ),
         );
       } else {
         add(
           channelName,
-          Channel(client: client, name: channelName),
+          Channel(client: client, name: channelName, subscribe: subscribe),
         );
       }
     }
@@ -37,6 +49,7 @@ class ChannelsCollection extends Collection<Channel> {
     return super.get(channelName)! as T;
   }
 
+  /// Removes a channel by its name.
   @override
   void remove(String id) {
     get(id)?.unsubscribe();
@@ -44,9 +57,10 @@ class ChannelsCollection extends Collection<Channel> {
     super.remove(id);
   }
 
+  /// Unsubscribes from all channels.
   @override
   void clear() {
-    all().forEach((channel) => channel.unsubscribe());
+    forEach((channel) => channel.unsubscribe());
 
     super.clear();
   }

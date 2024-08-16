@@ -1,21 +1,48 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
-import 'dart:typed_data';
 
-import 'package:pinenacl/tweetnacl.dart';
+import 'package:pinenacl/api.dart';
+import 'package:pinenacl/x25519.dart' show SecretBox;
 
+import '../utils/protocol.dart';
 import 'auth_options.dart';
 
+export 'auth_options.dart';
+export '../utils/protocol.dart';
+
+/// Represents the options of the Pusher client.
 class PusherOptions {
+  /// The protocol to use for the connection.
   final Protocol protocol;
+
+  //// The host of the connection.
   final String? host;
+
+  /// The key of the connection.
   final String key;
+
+  /// The cluster of the connection.
   final String? cluster;
+
+  /// The activity timeout of the connection (default: 120000).
   final int activityTimeout;
+
+  /// The pong timeout of the connection (default: 30000).
   final int pongTimeout;
+
+  /// The parameters of the connection.
   final Map<String, String> parameters;
-  final AuthOptions authOptions;
+
+  /// The authentication options of the connection.
+  final PusherAuthOptions authOptions;
+
+  /// Whether to enable logging or not.
   final bool enableLogging;
+
+  /// Whether to auto connect or not.
+  final bool autoConnect;
+
+  /// The channel decryption handler.
   final Map<String, dynamic> Function(
     Uint8List sharedSecret,
     Map<String, dynamic> data,
@@ -28,9 +55,10 @@ class PusherOptions {
     this.cluster,
     this.activityTimeout = 120000,
     this.pongTimeout = 30000,
-    required this.parameters,
+    this.parameters = const {},
     required this.authOptions,
-    required this.enableLogging,
+    this.enableLogging = false,
+    this.autoConnect = true,
     this.channelDecryption,
   });
 
@@ -56,6 +84,14 @@ class PusherOptions {
     }
   }
 
+  ByteList _decodeCipherText(String cipherText) {
+    Uint8List uint8list = base64Decode(cipherText);
+    ByteData byteData = ByteData.sublistView(uint8list);
+    List<int> data = List<int>.generate(
+        byteData.lengthInBytes, (index) => byteData.getUint8(index));
+    return ByteList(data);
+  }
+
   Map<String, dynamic> decryptChannelData(
     Uint8List sharedSecret,
     Map<String, dynamic> data,
@@ -75,47 +111,13 @@ class PusherOptions {
       );
     }
 
-    // Decode the ciphertext and nonce
-    final Uint8List cipherText = base64Decode(data["ciphertext"]);
-    if (cipherText.length < TweetNaCl.overheadLength) {
-      throw Exception("Empty or invalid ciphertext length");
-    }
+    final ByteList cipherText = _decodeCipherText(data["ciphertext"]);
 
     final Uint8List nonce = base64Decode(data["nonce"]);
-    if (nonce.length < TweetNaCl.nonceLength) {
-      throw Exception("Invalid nonce length");
-    }
 
-    // Create an output buffer for the decrypted message
-    final Uint8List decryptedData = Uint8List(
-      (cipherText.length - TweetNaCl.overheadLength).toInt(),
-    );
+    final SecretBox secretBox = SecretBox(sharedSecret);
+    final Uint8List decryptedData = secretBox.decrypt(cipherText, nonce: nonce);
 
-    // Decrypt the message using the shared secret
-    final result = TweetNaCl.crypto_secretbox_open(
-      decryptedData,
-      cipherText,
-      cipherText.length,
-      nonce,
-      sharedSecret,
-    );
-
-    // Convert the decrypted data to a String and parse it as JSON
-    return jsonDecode(utf8.decode(result)) as Map<String, dynamic>;
+    return jsonDecode(utf8.decode(decryptedData)) as Map<String, dynamic>;
   }
-}
-
-enum Protocol {
-  http,
-  https,
-  ws,
-  wss;
-
-  @override
-  String toString() => {
-        http: "http",
-        https: "https",
-        ws: "ws",
-        wss: "wss",
-      }[this]!;
 }

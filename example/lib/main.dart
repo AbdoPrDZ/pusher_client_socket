@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:pusher_client_socket/channel/channel.dart';
 import 'package:pusher_client_socket/pusher_client_socket.dart';
 
 void main() {
@@ -38,14 +37,20 @@ class _MyHomePageState extends State<MyHomePage> {
     // key: "037c47e0cbdc81fb7144",
     // secret: "2372e4edb46db25b52d1",
     // reverb
-    host: "localhost:6001",
-    authEndpoint: "http://localhost/broadcasting/auth",
-    key: "taefodv8dmh4w452l5e0",
-    authHeaders: {
-      "Authorization":
-          "Bearer 3|UZR2iWoWysRwWKe01ZV8hrDgi5XRs6GSJgAur8kB293a4628",
-    },
-    enableLogging: true,
+    options: const PusherOptions(
+      protocol: Protocol.ws,
+      host: "localhost:6001",
+      authOptions: PusherAuthOptions(
+        "http://localhost/broadcasting/auth",
+        headers: {
+          "Authorization":
+              "Bearer 5|QbkevD2CzFW1IsTScHIKX7knfCujcUHU9ETi1mPv3e543b31",
+        },
+      ),
+      key: "taefodv8dmh4w452l5e0",
+      enableLogging: true,
+      autoConnect: false,
+    ),
   );
 
   bool connected = false;
@@ -57,7 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
   PrivateChannel? channel;
   bool subscribed = false;
   bool subscribing = false;
-  String? subscribeError;
 
   final messageController = TextEditingController();
 
@@ -76,6 +80,14 @@ class _MyHomePageState extends State<MyHomePage> {
           connected = true;
           socketId = client.socketId;
           connecting = false;
+          client
+              .subscribe(
+                "private-encrypted-User.usr-e9e8dab5646f3148b2043bd6c28794a7",
+              )
+              .bind(
+                "UserUpdatedEvent",
+                (data) => print("UserUpdatedEvent - $data"),
+              );
         }));
 
     client.onDisconnected((reason) => setState(() {
@@ -84,8 +96,13 @@ class _MyHomePageState extends State<MyHomePage> {
           connecting = false;
         }));
 
+    client.onConnectionError((error) => setState(() {
+          connectError = "$error";
+          connecting = false;
+        }));
+
     client.onError((error) => setState(() {
-          connectError = error;
+          connectError = "$error";
           connecting = false;
         }));
   }
@@ -121,12 +138,6 @@ class _MyHomePageState extends State<MyHomePage> {
         subscribing = false;
       }),
     );
-    channel!.onSubscriptionError((error) => setState(() {
-          print("Subscribe error $error");
-          subscribeError = "$error";
-          subscribing = false;
-        }));
-    channel!.onUnsubscribed((data) => setState(() => subscribed = false));
     channel!.bind("client-whisper", (data) {
       print("test event - $data");
       setState(() {
@@ -138,6 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void unSubscribe() {
     channel!.unsubscribe();
+    setState(() => subscribed = false);
   }
 
   void sendMessage() {
@@ -248,17 +260,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                     ),
                   ],
-                  if (subscribeError != null)
-                    Text(
-                      subscribeError!.substring(
-                        0,
-                        min(400, subscribeError!.length),
-                      ),
-                      style: const TextStyle(
-                        color: Colors.red,
-                        fontSize: 20,
-                      ),
-                    ),
                 ],
               ],
             ],
