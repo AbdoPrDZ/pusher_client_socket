@@ -1,5 +1,5 @@
 name: pusher_client_socket
-description: "A new Flutter package project."
+description: "The pusher client using websocket client [available for all platforms]"
 version: 0.0.1
 homepage:
 
