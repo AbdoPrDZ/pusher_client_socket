@@ -7,6 +7,9 @@ void main() {
   runApp(const MyApp());
 }
 
+const String TOKEN = "AUTH_TOKEN";
+const String KEY = "PUSHER_KEY";
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -14,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Pusher Client Socket',
       theme: ThemeData(
         useMaterial3: true,
       ),
@@ -39,11 +42,10 @@ class _MyHomePageState extends State<MyHomePage> {
       authOptions: PusherAuthOptions(
         "http://localhost/broadcasting/auth",
         headers: {
-          "Authorization":
-              "Bearer 5|QbkevD2CzFW1IsTScHIKX7knfCujcUHU9ETi1mPv3e543b31",
+          "Authorization": "Bearer $TOKEN",
         },
       ),
-      key: "taefodv8dmh4w452l5e0",
+      key: KEY,
       enableLogging: true,
       autoConnect: false,
     ),
@@ -78,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
           connecting = false;
           client
               .subscribe(
-                "private-encrypted-User.usr-e9e8dab5646f3148b2043bd6c28794a7",
+                "private-encrypted-User.1",
               )
               .bind(
                 "UserUpdatedEvent",
