@@ -12,3 +12,13 @@
 * Handle `pusher_internal:` and `pusher:` events.
 * Add `onSubscriptionSuccess` event for all channels.
 * Upgrade `web_socket_client` to `^0.1.0`.
+
+## 0.0.2 - 2024-08-17 14:09
+
+* Remove `protocol` parameter from `PusherOptions`.
+* Add `wsPort` parameter to `PusherOptions`.
+* Add `wssPort` parameter to `PusherOptions`.
+* Add `encrypted` parameter to `PusherOptions`.
+* Add `maxReconnectionAttempts` parameter to `PusherOptions`.
+* Add `reconnectGap` parameter to `PusherOptions`.
+* Improve websocket connection uri generator.

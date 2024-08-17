@@ -32,14 +32,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   PusherClient client = PusherClient(
-    // pusher
-    // appId: "1321495",
-    // key: "037c47e0cbdc81fb7144",
-    // secret: "2372e4edb46db25b52d1",
-    // reverb
     options: const PusherOptions(
-      protocol: Protocol.ws,
-      host: "localhost:6001",
+      host: "localhost",
+      wsPort: 6001,
+      encrypted: false,
       authOptions: PusherAuthOptions(
         "http://localhost/broadcasting/auth",
         headers: {

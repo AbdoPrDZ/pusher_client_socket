@@ -4,22 +4,26 @@ import 'dart:developer' as dev;
 import 'package:pinenacl/api.dart';
 import 'package:pinenacl/x25519.dart' show SecretBox;
 
-import '../utils/protocol.dart';
 import 'auth_options.dart';
 
 export 'auth_options.dart';
-export '../utils/protocol.dart';
 
 /// Represents the options of the Pusher client.
 class PusherOptions {
-  /// The protocol to use for the connection.
-  final Protocol protocol;
+  /// The key of the connection.
+  final String key;
 
   //// The host of the connection.
   final String? host;
 
-  /// The key of the connection.
-  final String key;
+  /// The ws port of the connection (default: 80).
+  final int wsPort;
+
+  /// The wss port of the connection (default: 443).
+  final int wssPort;
+
+  /// Enable encryption for the connection.
+  final bool encrypted;
 
   /// The cluster of the connection.
   final String? cluster;
@@ -42,6 +46,12 @@ class PusherOptions {
   /// Whether to auto connect or not.
   final bool autoConnect;
 
+  /// The maximum reconnection attempts.
+  final int maxReconnectionAttempts;
+
+  /// The reconnection duration.
+  final Duration reconnectGap;
+
   /// The channel decryption handler.
   final Map<String, dynamic> Function(
     Uint8List sharedSecret,
@@ -49,28 +59,54 @@ class PusherOptions {
   )? channelDecryption;
 
   const PusherOptions({
-    this.protocol = Protocol.ws,
-    this.host,
     required this.key,
     this.cluster,
+    this.host,
+    this.wsPort = 80,
+    this.wssPort = 443,
+    this.encrypted = true,
     this.activityTimeout = 120000,
     this.pongTimeout = 30000,
-    this.parameters = const {},
+    this.parameters = const {
+      'client': 'pusher-client-socket-dart',
+      'protocol': '7',
+      'version': '0.0.2',
+      "flash": "false",
+    },
     required this.authOptions,
     this.enableLogging = false,
     this.autoConnect = true,
+    this.maxReconnectionAttempts = 6,
+    this.reconnectGap = const Duration(seconds: 2),
     this.channelDecryption,
   });
 
-  String get url => "$protocol://$wsHost/app/$key?${[
-        for (String key in parameters.keys) "$key=${parameters[key]}"
-      ].join("&")}";
+  Uri get uri {
+    Uri? hostUri;
+    try {
+      hostUri = Uri.parse(host!);
+      if (hostUri.scheme.isEmpty) {
+        hostUri = Uri.parse('${encrypted ? 'wss' : 'ws'}://$host');
+      }
+    } catch (e) {
+      dev.log("Invalid host: $host", error: e);
+    }
 
-  String get wsHost => host != null
-      ? host!
-      : cluster != null
-          ? 'ws-$cluster.pusher.com'
-          : 'ws.pusher.com';
+    return Uri(
+      scheme: hostUri?.scheme.isNotEmpty == true
+          ? hostUri!.scheme
+          : (encrypted ? 'wss' : 'ws'),
+      host: hostUri?.host.isNotEmpty == true
+          ? hostUri!.host
+          : (cluster != null ? 'ws-$cluster.pusher.com' : 'ws.pusher.com'),
+      port: hostUri?.port == 0 ? (encrypted ? wssPort : wsPort) : uri.port,
+      queryParameters: {
+        ...parameters,
+        if (hostUri?.query.isNotEmpty == true) ...hostUri!.queryParameters,
+      },
+      path: '/app/$key',
+    );
+  }
 
   log(String level, [String? channel, String? message]) {
     if (enableLogging) {
@@ -96,12 +132,12 @@ class PusherOptions {
     Uint8List sharedSecret,
     Map<String, dynamic> data,
   ) =>
-      (channelDecryption ?? _defaultChannelDecryptionHandler)(
+      (channelDecryption ?? defaultChannelDecryptionHandler)(
         sharedSecret,
         data,
       );
 
-  Map<String, dynamic> _defaultChannelDecryptionHandler(
+  Map<String, dynamic> defaultChannelDecryptionHandler(
     Uint8List sharedSecret,
     Map<String, dynamic> data,
   ) {
