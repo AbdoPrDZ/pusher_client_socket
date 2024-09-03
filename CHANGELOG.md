@@ -22,3 +22,7 @@
 * Add `maxReconnectionAttempts` parameter to `PusherOptions`.
 * Add `reconnectGap` parameter to `PusherOptions`.
 * Improve websocket connection uri generator.
+
+## 0.0.2+1 - 2024-09-03 20:34
+
+* Upgrade flutter sdk.

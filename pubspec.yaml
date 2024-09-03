@@ -1,10 +1,10 @@
 name: pusher_client_socket
 description: "The pusher client using websocket client [available for all platforms]"
-version: 0.0.2
+version: 0.0.2+1
 homepage: https://github.com/AbdoPrDZ/pusher_client_socket
 
 environment:
-  sdk: ">=3.5.0 <4.0.0"
+  sdk: ^3.5.1
   flutter: ">=1.17.0"
 
 dependencies:
@@ -18,6 +18,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
 
 flutter: null
