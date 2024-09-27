@@ -9,7 +9,7 @@ class Collection<T> {
 
   /// Removes an item from the collection.
   void remove(String id) {
-    if (!_items.containsKey(id)) _items.remove(id);
+    if (_items.containsKey(id)) _items.remove(id);
   }
 
   /// Checks if the collection contains an item with the given ID.
