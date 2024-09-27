@@ -1,6 +1,6 @@
 name: pusher_client_socket
 description: "The pusher client using websocket client [available for all platforms]"
-version: 0.0.2+1
+version: 0.0.2+2
 homepage: https://github.com/AbdoPrDZ/pusher_client_socket
 
 environment:

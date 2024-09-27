@@ -17,7 +17,7 @@ Add the following dependency to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  pusher_client_socket: ^0.0.2+1
+  pusher_client_socket: ^0.0.2+2
 ```
 
 Then run:
@@ -51,41 +51,41 @@ import 'package:pusher_client_socket/channels/presence_channel.dart';
 
 1. Pusher default server:
 
-    ```dart
-    final options = PusherOptions(
-      key: 'PUSHER-KEY',
-      cluster: 'mt1',
-      wsPort: 80,
-      wssPort: 443,
-      authOptions: PusherAuthOptions(
-        endpoint: 'http://localhost/broadcasting/auth',
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer AUTH-TOKEN'
-        }
-      ),
-      autoConnect: false,
-    );
-    ```
+   ```dart
+   final options = PusherOptions(
+     key: 'PUSHER-KEY',
+     cluster: 'mt1',
+     wsPort: 80,
+     wssPort: 443,
+     authOptions: PusherAuthOptions(
+       endpoint: 'http://localhost/broadcasting/auth',
+       headers: {
+         'Accept': 'application/json',
+         'Authorization': 'Bearer AUTH-TOKEN'
+       }
+     ),
+     autoConnect: false,
+   );
+   ```
 
 2. Specify server (e.g: Laravel/Reverb):
 
-    ```dart
-    final options = PusherOptions(
-      key: 'REVERB_APP_KEY',
-      host: 'localhost', // REVERB_HOST
-      wsPort: 6001, // REVERB_PORT
-      encrypted: false, // (Note: enable it if you'r using wss connection) 
-      authOptions: PusherAuthOptions(
-        endpoint: 'http://localhost/broadcasting/auth',
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer AUTH-TOKEN'
-        }
-      ),
-      autoConnect: false,
-    );
-    ```
+   ```dart
+   final options = PusherOptions(
+     key: 'REVERB_APP_KEY',
+     host: 'localhost', // REVERB_HOST
+     wsPort: 6001, // REVERB_PORT
+     encrypted: false, // (Note: enable it if you'r using wss connection)
+     authOptions: PusherAuthOptions(
+       endpoint: 'http://localhost/broadcasting/auth',
+       headers: {
+         'Accept': 'application/json',
+         'Authorization': 'Bearer AUTH-TOKEN'
+       }
+     ),
+     autoConnect: false,
+   );
+   ```
 
 ### 3. Initialize the client and connect
 
@@ -148,7 +148,6 @@ presenceChannel.trigger('client-EventName', data);
 presenceChannel.trigger('EventName', data);
 ```
 
-
 ### 7. Unsubscribing from channel
 
 ```dart
@@ -157,32 +156,30 @@ channel.unsubscribe();
 
 ## Pusher Client Options
 
-| Option                    | Type                  | Description |
-| -------------------       | --------------------- | ----------- |
-| `key`                     | `String`              | The Pusher app key used to authenticate the connection. This is a required parameter. |
-| `cluster`                 | `String?`             | The cluster of the Pusher server. If provided, it is used to construct the default WebSocket host. |
-| `host`                    | `String?`             | The custom host for the connection. If not provided, it defaults to the Pusher WebSocket host based on the cluster. |
-| `wsPort`                  | `int`                 | The ws port of the connection (default: 80).  |
-| `wssPort`                 | `int`                 | The wss port of the connection (default: 443).  |
-| `encrypted`               | `bool`                | A flag indicating whether to enable encrypted connection. Default is `false`. |
-| `activityTimeout`         | `int`                 | The activity timeout in milliseconds. This is the duration after which a ping is sent if no activity is detected. Default is 120000 (2 minutes). |
-| `pongTimeout`             | `int`                 | The timeout in milliseconds for waiting for a pong response after a ping is sent. Default is 30000 (30 seconds). |
-| `parameters`              | `Map<String, String>` | Additional parameters to be appended to the WebSocket URL query string. |
-| `authOptions`             | `PusherAuthOptions`   | The options for authentication, such as headers or credentials. This is required for authenticating private and presence channels. |
-| `enableLogging`           | `bool`                | A flag indicating whether to enable logging for the Pusher client. Default is `false`. |
-| `autoConnect`             | `bool`                | A flag indicating whether to automatically connect to the Pusher server upon initialization. Default is `true`. |
-| `maxReconnectionAttempts` | `int`                 | The maximum reconnection attempts. |
-| `reconnectGap`            | `Duration`            | The reconnection duration gap. |
-| `channelDecryption`       | `Map<String, dynamic> Function(Uint8List sharedSecret, Map<String, dynamic> data)?` | A custom handler for decrypting data on encrypted channels. If not provided, the default decryption handler is used. |
+| Option                    | Type                                                                                | Description                                                                                                                                      |
+| ------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `key`                     | `String`                                                                            | The Pusher app key used to authenticate the connection. This is a required parameter.                                                            |
+| `cluster`                 | `String?`                                                                           | The cluster of the Pusher server. If provided, it is used to construct the default WebSocket host.                                               |
+| `host`                    | `String?`                                                                           | The custom host for the connection. If not provided, it defaults to the Pusher WebSocket host based on the cluster.                              |
+| `wsPort`                  | `int`                                                                               | The ws port of the connection (default: 80).                                                                                                     |
+| `wssPort`                 | `int`                                                                               | The wss port of the connection (default: 443).                                                                                                   |
+| `encrypted`               | `bool`                                                                              | A flag indicating whether to enable encrypted connection. Default is `false`.                                                                    |
+| `activityTimeout`         | `int`                                                                               | The activity timeout in milliseconds. This is the duration after which a ping is sent if no activity is detected. Default is 120000 (2 minutes). |
+| `pongTimeout`             | `int`                                                                               | The timeout in milliseconds for waiting for a pong response after a ping is sent. Default is 30000 (30 seconds).                                 |
+| `parameters`              | `Map<String, String>`                                                               | Additional parameters to be appended to the WebSocket URL query string.                                                                          |
+| `authOptions`             | `PusherAuthOptions`                                                                 | The options for authentication, such as headers or credentials. This is required for authenticating private and presence channels.               |
+| `enableLogging`           | `bool`                                                                              | A flag indicating whether to enable logging for the Pusher client. Default is `false`.                                                           |
+| `autoConnect`             | `bool`                                                                              | A flag indicating whether to automatically connect to the Pusher server upon initialization. Default is `true`.                                  |
+| `maxReconnectionAttempts` | `int`                                                                               | The maximum reconnection attempts.                                                                                                               |
+| `reconnectGap`            | `Duration`                                                                          | The reconnection duration gap.                                                                                                                   |
+| `channelDecryption`       | `Map<String, dynamic> Function(Uint8List sharedSecret, Map<String, dynamic> data)?` | A custom handler for decrypting data on encrypted channels. If not provided, the default decryption handler is used.                             |
 
 ## Pusher Auth Options
 
-
-| Option     | Type                  | Description |
-| ---------- | --------------------- | ----------- |
-| `endpoint` | `String`              | The endpoint for the authentication. |
+| Option     | Type                  | Description                                                                     |
+| ---------- | --------------------- | ------------------------------------------------------------------------------- |
+| `endpoint` | `String`              | The endpoint for the authentication.                                            |
 | `headers`  | `Map<String, String>` | The headers for the authentication (default: `{'Accept': 'application/json'}`). |
-
 
 ## Contributing
 
