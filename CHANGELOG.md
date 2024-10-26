@@ -30,3 +30,8 @@
 ## 0.0.2+2 - 2024-09-27 17:06
 
 - Bug Fix: the remove function of the Collection class doesn't remove a channel from the collections because the condition to check if the channel id exist was wrong.
+
+## 0.0.2+3 - 2024-10-26 17:24
+
+- Upgrade sdk version.
+- Upgrade packages versions.
