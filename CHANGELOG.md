@@ -35,3 +35,7 @@
 
 - Upgrade sdk version.
 - Upgrade packages versions.
+
+## 0.0.2+4 - 2024-11-01 14:52
+
+- Upgrade flutter sdk version.

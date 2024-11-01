@@ -34,22 +34,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  PusherClient client = PusherClient(
-    options: const PusherOptions(
-      host: "localhost",
-      wsPort: 6001,
-      encrypted: false,
-      authOptions: PusherAuthOptions(
-        "http://localhost/broadcasting/auth",
-        headers: {
-          "Authorization": "Bearer $TOKEN",
-        },
-      ),
-      key: KEY,
-      enableLogging: true,
-      autoConnect: false,
-    ),
-  );
+  late PusherClient client;
+
+  final tokenController = TextEditingController(text: TOKEN);
 
   bool connected = false;
   bool connecting = false;
@@ -65,10 +52,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String messages = '';
 
-  @override
-  void initState() {
-    super.initState();
+  void connect() {
+    if (tokenController.text.isEmpty) {
+      return;
+    }
 
+    setState(() {
+      connecting = true;
+    });
+    client = PusherClient(
+      options: PusherOptions(
+        host: "localhost",
+        wsPort: 6001,
+        encrypted: false,
+        authOptions: PusherAuthOptions(
+          "http://localhost/api/broadcasting/auth",
+          headers: {
+            "Accept": "application/json",
+            // "Content-Type": "application/json",
+            "Authorization": "Bearer ${tokenController.text}",
+          },
+        ),
+        key: KEY,
+        enableLogging: true,
+        autoConnect: false,
+      ),
+    );
     // client.onConnected((data) => setState(() {
     //       connected = true;
     //       loading = false;
@@ -103,12 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
           connectError = "$error";
           connecting = false;
         }));
-  }
-
-  void connect() {
-    setState(() {
-      connecting = true;
-    });
 
     client.connect();
   }
@@ -174,6 +177,14 @@ class _MyHomePageState extends State<MyHomePage> {
               if (connecting)
                 const CircularProgressIndicator()
               else ...[
+                if (!connected)
+                  TextField(
+                    controller: tokenController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Token',
+                    ),
+                  ),
                 ElevatedButton(
                   onPressed: connected ? disconnect : connect,
                   child: Text(
