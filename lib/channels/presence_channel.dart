@@ -31,11 +31,15 @@ class PresenceChannel extends PrivateChannel {
   void _onMemberAdd(Map data) {
     options.log("MEMBER_ADDED", name, "member: $data");
 
-    _members.add(data["id"], Member.fromMap(data), override: true);
+    final member = Member.fromMap(data);
+    _members.add(member.id, Member.fromMap(data), override: true);
   }
 
   void _onMemberRemove(Map data) {
     options.log("MEMBER_REMOVED", name, "member: $data");
-    _members.remove(data["id"]);
+
+    final id = data["user_id"] ?? data["id"];
+
+    if (id != null) _members.remove(id);
   }
 }

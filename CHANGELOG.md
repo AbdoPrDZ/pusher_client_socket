@@ -43,3 +43,7 @@
 ## 0.0.2+5 - 2024-11-01 19:52
 
 - Fix Member fromMap function.
+
+## 0.0.2+6 - 2024-11-01 20:17
+
+- Fix Member add and member remove functions.
