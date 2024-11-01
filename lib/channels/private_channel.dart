@@ -27,7 +27,9 @@ class PrivateChannel extends Channel {
   /// Subscribes to the private channel.
   @override
   void subscribe([bool force = false]) async {
-    if (!client.connected || (subscribed && !force)) {
+    if (!client.connected ||
+        (subscribed && !force) ||
+        client.socketId == null) {
       return;
     }
 

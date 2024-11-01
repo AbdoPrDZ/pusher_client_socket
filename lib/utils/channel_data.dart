@@ -7,11 +7,11 @@ class ChannelData {
   /// The user info of the channel data.
   final dynamic userInfo;
 
-  ChannelData({required this.userId, this.userInfo = false});
+  const ChannelData({required this.userId, this.userInfo = false});
 
   /// Creates a new instance from a json map.
   factory ChannelData.fromJson(Map json) => ChannelData(
-        userId: json["user_id"],
+        userId: json["user_id"] ?? '',
         userInfo: json["user_info"],
       );
 

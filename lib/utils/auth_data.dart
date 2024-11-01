@@ -10,11 +10,15 @@ class AuthData {
   /// The shared secret for encrypted channels.
   final String? sharedSecret;
 
-  AuthData({required this.auth, required this.channelData, this.sharedSecret});
+  const AuthData({
+    required this.auth,
+    required this.channelData,
+    this.sharedSecret,
+  });
 
   /// Creates a new instance from a json map.
   factory AuthData.fromJson(Map json) => AuthData(
-        auth: json["auth"],
+        auth: json["auth"] ?? '',
         channelData: json["channel_data"] != null
             ? ChannelData.fromJsonString(json["channel_data"])
             : null,

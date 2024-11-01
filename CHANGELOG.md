@@ -39,3 +39,7 @@
 ## 0.0.2+4 - 2024-11-01 14:52
 
 - Upgrade flutter sdk version.
+
+## 0.0.2+5 - 2024-11-01 19:52
+
+- Fix Member fromMap function.

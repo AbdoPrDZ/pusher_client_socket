@@ -9,6 +9,8 @@ class Member {
   const Member({required this.id, this.info});
 
   /// Creates a new instance from a map.
-  factory Member.fromMap(Map data) =>
-      Member(id: data["id"], info: data["info"]);
+  factory Member.fromMap(Map data) => Member(
+        id: data["user_id"] ?? data['id'] ?? '',
+        info: data['user_info'] ?? data["info"],
+      );
 }
