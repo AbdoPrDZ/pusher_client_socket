@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:pusher_client_socket/channels/channel.dart';
 import 'package:pusher_client_socket/src/channels.collection.dart';
 import 'package:pusher_client_socket/src/events_listeners.collection.dart';
@@ -70,6 +71,7 @@ class PusherClient {
     options.log("DISCONNECT", null, "code: $code\n  reason: $reason");
 
     _socket.close(code, reason);
+    __socket = null;
   }
 
   void _onConnectionStateChange(ConnectionState state) {
@@ -120,7 +122,6 @@ class PusherClient {
         _stopActivityTimer();
         _connected = false;
         _socketId = null;
-        __socket = null;
         break;
       default:
     }
@@ -233,7 +234,7 @@ class PusherClient {
     _eventsListeners.handleEvent(event, data, channel);
 
     if (channel != null) {
-      _channelsCollection.get(channel)?.handleEvent(event, data);
+      channelsCollection.get(channel)?.handleEvent(event, data);
     }
   }
 
@@ -288,11 +289,12 @@ class PusherClient {
   void onError(Function(dynamic error) listener) =>
       bind('pusher:error', listener);
 
-  late final _channelsCollection = ChannelsCollection(this);
+  @internal
+  late final channelsCollection = ChannelsCollection(this);
 
   /// Returns a channel by name.
   T channel<T extends Channel>(String channelName, {bool subscribe = false}) =>
-      _channelsCollection.channel<T>(channelName, subscribe: subscribe);
+      channelsCollection.channel<T>(channelName, subscribe: subscribe);
 
   /// Returns a private channel by name.
   PrivateChannel private(String channelName, {bool subscribe = false}) =>
@@ -329,11 +331,8 @@ class PusherClient {
   /// Unsubscribes from a channel by name.
   void unsubscribe(String channelName) => channel(channelName).unsubscribe();
 
-  void _reSubscribe() {
-    _channelsCollection.forEach((channel) {
-      if (channel.subscribed) {
-        channel.subscribe(true);
-      }
-    });
-  }
+  /// Re-subscribes to all channels.
+  void _reSubscribe() => channelsCollection.forEach(
+        (channel) => channel.subscribe(true),
+      );
 }

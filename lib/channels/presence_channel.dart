@@ -7,7 +7,6 @@ class PresenceChannel extends PrivateChannel {
   PresenceChannel({
     required super.client,
     required super.name,
-    super.subscribe,
   }) {
     onMemberAdded(_onMemberAdd);
     onMemberRemoved(_onMemberRemove);

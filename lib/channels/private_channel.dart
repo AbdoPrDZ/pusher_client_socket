@@ -11,7 +11,6 @@ class PrivateChannel extends Channel {
   PrivateChannel({
     required super.client,
     required super.name,
-    super.subscribe,
   }) {
     onSubscriptionSuccess(_onSubscriptionSuccess);
     onSubscriptionCount(_onSubscriptionCount);

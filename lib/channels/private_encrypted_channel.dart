@@ -7,7 +7,6 @@ class PrivateEncryptedChannel extends PrivateChannel {
   PrivateEncryptedChannel({
     required super.client,
     required super.name,
-    super.subscribe,
   });
 
   Map<String, dynamic> _decrypt(Map<String, dynamic> data) {

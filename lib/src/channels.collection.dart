@@ -17,7 +17,6 @@ class ChannelsCollection extends Collection<Channel> {
           PrivateEncryptedChannel(
             client: client,
             name: channelName,
-            subscribe: subscribe,
           ),
         );
       } else if (channelName.startsWith("private-")) {
@@ -26,7 +25,6 @@ class ChannelsCollection extends Collection<Channel> {
           PrivateChannel(
             client: client,
             name: channelName,
-            subscribe: subscribe,
           ),
         );
       } else if (channelName.startsWith("presence-")) {
@@ -35,26 +33,22 @@ class ChannelsCollection extends Collection<Channel> {
           PresenceChannel(
             client: client,
             name: channelName,
-            subscribe: subscribe,
           ),
         );
       } else {
         add(
           channelName,
-          Channel(client: client, name: channelName, subscribe: subscribe),
+          Channel(client: client, name: channelName),
         );
       }
     }
 
-    return super.get(channelName)! as T;
-  }
+    T channel = super.get(channelName)! as T;
+    if (subscribe) {
+      channel.subscribe();
+    }
 
-  /// Removes a channel by its name.
-  @override
-  void remove(String id) {
-    get(id)?.unsubscribe();
-
-    super.remove(id);
+    return channel;
   }
 
   /// Unsubscribes from all channels.
