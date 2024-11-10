@@ -27,6 +27,8 @@ class PresenceChannel extends PrivateChannel {
 
   final _members = Collection<Member>();
 
+  List<Member> get members => _members.all();
+
   void _onMemberAdd(Map data) {
     options.log("MEMBER_ADDED", name, "member: $data");
 
