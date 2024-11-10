@@ -54,3 +54,5 @@
 - Fix client reconnect error.
 
 ## 0.0.3 - 2024-11-04 20:25
+
+- Add members getter veriable in presence channel.
