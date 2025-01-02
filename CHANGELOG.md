@@ -56,3 +56,7 @@
 ## 0.0.3 - 2024-11-04 20:25
 
 - Add members getter veriable in presence channel.
+
+## 0.0.3+1 - 2025-01-02
+
+- Upgrade flutter sdk version.
