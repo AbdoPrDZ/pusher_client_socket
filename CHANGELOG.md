@@ -55,8 +55,14 @@
 
 ## 0.0.3 - 2024-11-04 20:25
 
-- Add members getter veriable in presence channel.
+- Add members getter variable in presence channel.
 
 ## 0.0.3+1 - 2025-01-02
 
+- Upgrade flutter sdk version.
+
+## 0.0.4 - 2025-02-23
+
+- merge commit [Close and reset web_socket connection](https://github.com/usmanabdulmajid/pusher_client_socket/commit/13d978fa2d11b4bbe82ea57bbb8a62415905bb3f)
+- merge commit [Update connected to true when Connection state is Reconnected](https://github.com/usmanabdulmajid/pusher_client_socket/commit/df108910f1839642ab14e5fec0497507a65ea086)
 - Upgrade flutter sdk version.

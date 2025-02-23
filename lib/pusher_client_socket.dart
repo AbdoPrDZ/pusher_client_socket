@@ -56,6 +56,12 @@ class PusherClient {
 
   /// Connects the client to the server.
   void connect() {
+    /// Close and reset web_socket connection (by @usmanabdulmajid)
+    if (__socket != null) {
+      __socket!.close();
+      __socket = null;
+    }
+
     __socket = WebSocket(options.uri);
 
     _socket.connection.listen(_onConnectionStateChange);
@@ -90,7 +96,9 @@ class PusherClient {
       "the connection state changed from ${states[_connectionState]} to ${states[state]}",
     );
     _connectionState = state;
-    _connected = state is Connected;
+
+    /// Check if the client is connected (fixed by @usmanabdulmajid)
+    _connected = state is Connected || state is Reconnected;
 
     _onEvent("connection_state_changed", state);
 
@@ -198,9 +206,7 @@ class PusherClient {
     try {
       event = jsonDecode(message);
     } catch (e) {
-      throw Exception(
-        'Invalid message "$message", cannot decode message json',
-      );
+      throw Exception('Invalid message "$message", cannot decode message json');
     }
 
     if (event is Map) {
@@ -219,9 +225,7 @@ class PusherClient {
 
         _onEvent(eventName, data, event["channel"]);
       } else {
-        throw Exception(
-          'Invalid event "$event", messing event name',
-        );
+        throw Exception('Invalid event "$event", messing event name');
       }
     } else {
       throw Exception(
@@ -248,11 +252,13 @@ class PusherClient {
   /// Send an event to the server.
   void sendEvent(String event, [dynamic data, String? channel]) {
     options.log("SEND_EVENT", null, "event: $event\n  data: $data");
-    _socket.send(jsonEncode({
-      "event": event,
-      "data": data,
-      if (channel != null) "channel": channel,
-    }));
+    _socket.send(
+      jsonEncode({
+        "event": event,
+        "data": data,
+        if (channel != null) "channel": channel,
+      }),
+    );
   }
 
   /// Binding to the connection state change event.
@@ -306,14 +312,15 @@ class PusherClient {
       );
 
   /// Returns a private encrypted channel by name.
-  PrivateChannel privateEncrypted(String channelName,
-          {bool subscribe = false}) =>
-      channel(
-        channelName.startsWith("private-encrypted-")
-            ? channelName
-            : "private-encrypted-$channelName",
-        subscribe: subscribe,
-      );
+  PrivateChannel privateEncrypted(
+    String channelName, {
+    bool subscribe = false,
+  }) => channel(
+    channelName.startsWith("private-encrypted-")
+        ? channelName
+        : "private-encrypted-$channelName",
+    subscribe: subscribe,
+  );
 
   /// Returns a presence channel by name.
   PresenceChannel presence(String channelName, {bool subscribe = false}) =>
@@ -332,7 +339,6 @@ class PusherClient {
   void unsubscribe(String channelName) => channel(channelName).unsubscribe();
 
   /// Re-subscribes to all channels.
-  void _reSubscribe() => channelsCollection.forEach(
-        (channel) => channel.subscribe(true),
-      );
+  void _reSubscribe() =>
+      channelsCollection.forEach((channel) => channel.subscribe(true));
 }

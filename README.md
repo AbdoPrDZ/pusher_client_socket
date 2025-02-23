@@ -17,7 +17,7 @@ Add the following dependency to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  pusher_client_socket: ^0.0.2+6
+  pusher_client_socket: latest
 ```
 
 Then run:
