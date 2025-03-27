@@ -66,3 +66,7 @@
 - merge commit [Close and reset web_socket connection](https://github.com/usmanabdulmajid/pusher_client_socket/commit/13d978fa2d11b4bbe82ea57bbb8a62415905bb3f)
 - merge commit [Update connected to true when Connection state is Reconnected](https://github.com/usmanabdulmajid/pusher_client_socket/commit/df108910f1839642ab14e5fec0497507a65ea086)
 - Upgrade flutter sdk version.
+
+## 0.0.5 - 2025-03-27
+
+- Upgrade flutter sdk version.
