@@ -75,7 +75,7 @@ import 'package:pusher_client_socket/channels/presence_channel.dart';
      key: 'REVERB_APP_KEY',
      host: 'localhost', // REVERB_HOST
      wsPort: 6001, // REVERB_PORT
-     wpPath: '/app',
+     wsPath: '/app',
      encrypted: false, // (Note: enable it if you're using wss connection)
      authOptions: PusherAuthOptions(
        endpoint: 'http://localhost/broadcasting/auth',
