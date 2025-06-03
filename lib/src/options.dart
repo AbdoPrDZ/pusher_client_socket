@@ -22,7 +22,7 @@ class PusherOptions {
   /// The wss port of the connection (default: 443).
   final int wssPort;
 
-  /// The path portion of the connection (default: /app/).
+  /// The path portion of the connection (default: /app).
   final String wsPath;
 
   /// Enable encryption for the connection.
