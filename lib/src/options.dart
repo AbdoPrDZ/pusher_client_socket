@@ -67,7 +67,7 @@ class PusherOptions {
     this.host,
     this.wsPort = 80,
     this.wssPort = 443,
-    this.wsPath = '/app/',
+    this.wsPath = '/app',
     this.encrypted = true,
     this.activityTimeout = 120000,
     this.pongTimeout = 30000,
@@ -108,7 +108,7 @@ class PusherOptions {
         ...parameters,
         if (hostUri?.query.isNotEmpty == true) ...hostUri!.queryParameters,
       },
-      path: '${wsPath}${key}',
+      path: '${wsPath}/${key}',
     );
   }
 
