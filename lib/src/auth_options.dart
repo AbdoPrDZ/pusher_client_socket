@@ -4,14 +4,12 @@ class PusherAuthOptions {
   final String endpoint;
 
   /// The headers for the authentication (default: `{'Accept': 'application/json'}`).
-  final Map<String, String> headers;
+  final Future<Map<String, String>> Function() headers;
 
-  const PusherAuthOptions(
+   PusherAuthOptions(
     this.endpoint, {
-    this.headers = const {
-      'Accept': 'application/json',
-    },
-  });
+    Future<Map<String, String>> Function()? headers,
+  }) : headers = headers ?? (() async => {'Accept': 'application/json'});
 
   /// Returns a new [PusherAuthOptions] with the given endpoint.
   @override

@@ -67,11 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
         encrypted: false,
         authOptions: PusherAuthOptions(
           "http://localhost/api/broadcasting/auth",
-          headers: {
-            "Accept": "application/json",
-            // "Content-Type": "application/json",
-            "Authorization": "Bearer ${tokenController.text}",
-          },
+          headers:
+              () async => {
+                "Accept": "application/json",
+                // "Content-Type": "application/json",
+                "Authorization": "Bearer ${tokenController.text}",
+              },
         ),
         key: KEY,
         enableLogging: true,

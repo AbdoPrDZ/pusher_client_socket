@@ -44,7 +44,7 @@ class PrivateChannel extends Channel {
     final response = await http.post(
       Uri.parse(authOptions.endpoint),
       body: payload,
-      headers: authOptions.headers,
+      headers: await authOptions.headers(),
     );
 
     options.log(
