@@ -10,6 +10,7 @@ A Dart library for connecting to a Pusher server using WebSockets. This library 
 - Bind event listeners to handle custom and Pusher-specific events.
 - Automatic reconnection logic for handling connection interruptions.
 - Activity check mechanism to ensure the connection remains active.
+- **New:** `PusherAuthOptions.headers` can now be provided as an async function, allowing dynamic retrieval of tokens from secure or async storage.
 
 ## Installation
 
@@ -59,10 +60,13 @@ import 'package:pusher_client_socket/channels/presence_channel.dart';
      wssPort: 443,
      authOptions: PusherAuthOptions(
        endpoint: 'http://localhost/broadcasting/auth',
-       headers: {
-         'Accept': 'application/json',
-         'Authorization': 'Bearer AUTH-TOKEN'
-       }
+       headers: () async {
+        final token = await getAuthTokenFromStorage();
+        return {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        };
+      },
      ),
      autoConnect: false,
    );
@@ -78,10 +82,13 @@ import 'package:pusher_client_socket/channels/presence_channel.dart';
      encrypted: false, // (Note: enable it if you'r using wss connection)
      authOptions: PusherAuthOptions(
        endpoint: 'http://localhost/broadcasting/auth',
-       headers: {
-         'Accept': 'application/json',
-         'Authorization': 'Bearer AUTH-TOKEN'
-       }
+       headers: () async {
+        final token = await getAuthTokenFromStorage();
+        return {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        };
+      },
      ),
      autoConnect: false,
    );
@@ -176,10 +183,10 @@ channel.unsubscribe();
 
 ## Pusher Auth Options
 
-| Option     | Type                  | Description                                                                     |
-| ---------- | --------------------- | ------------------------------------------------------------------------------- |
-| `endpoint` | `String`              | The endpoint for the authentication.                                            |
-| `headers`  | `Map<String, String>` | The headers for the authentication (default: `{'Accept': 'application/json'}`). |
+| Option     | Type                                      | Description                                                                                                                                                                                   |
+| ---------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `endpoint` | `String`                                  | The endpoint for the authentication.                                                                                                                                                          |
+| `headers`  | `Future<Map<String, String>> Function()?` | A function that returns headers asynchronously when needed. Useful when tokens are stored in async storage (e.g., SharedPreferences). Defaults to returning `{'Accept': 'application/json'}`. |
 
 ## Contributing
 
