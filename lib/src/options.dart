@@ -53,10 +53,7 @@ class PusherOptions {
   final Duration reconnectGap;
 
   /// The channel decryption handler.
-  final Map<String, dynamic> Function(
-    Uint8List sharedSecret,
-    Map<String, dynamic> data,
-  )? channelDecryption;
+  final Map<String, dynamic> Function(Uint8List sharedSecret, Map<String, dynamic> data)? channelDecryption;
 
   const PusherOptions({
     required this.key,
@@ -90,57 +87,49 @@ class PusherOptions {
       }
     } catch (e) {
       dev.log("Invalid host: $host", error: e);
+      // fallback nếu muốn
+      hostUri = Uri(
+        scheme: encrypted ? 'wss' : 'ws',
+        host: cluster != null ? 'ws-$cluster.pusher.com' : 'ws.pusher.com',
+        port: encrypted ? wssPort : wsPort,
+      );
     }
 
-    return Uri(
-      scheme: hostUri?.scheme.isNotEmpty == true
-          ? hostUri!.scheme
-          : (encrypted ? 'wss' : 'ws'),
-      host: hostUri?.host.isNotEmpty == true
-          ? hostUri!.host
-          : (cluster != null ? 'ws-$cluster.pusher.com' : 'ws.pusher.com'),
-      port: hostUri?.port == 0 ? (encrypted ? wssPort : wsPort) : uri.port,
-      queryParameters: {
-        ...parameters,
-        if (hostUri?.query.isNotEmpty == true) ...hostUri!.queryParameters,
-      },
+    Uri finalUri = Uri(
+      scheme: hostUri.scheme,
+      host: hostUri.host,
+      port: hostUri.hasPort ? hostUri.port : (encrypted ? wssPort : wsPort),
+      queryParameters: {...parameters, if (hostUri.hasQuery) ...hostUri.queryParameters},
       path: '/app/$key',
     );
+    return finalUri;
   }
 
   log(String level, [String? channel, String? message]) {
     if (enableLogging) {
-      dev.log([
-        "[PUSHER_",
-        if (channel != null) "CHANNEL_",
-        "$level]",
-        if (channel != null) "\n  channel: $channel",
-        if (message != null) "\n  $message"
-      ].join(""));
+      dev.log(
+        [
+          "[PUSHER_",
+          if (channel != null) "CHANNEL_",
+          "$level]",
+          if (channel != null) "\n  channel: $channel",
+          if (message != null) "\n  $message",
+        ].join(""),
+      );
     }
   }
 
   ByteList _decodeCipherText(String cipherText) {
     Uint8List uint8list = base64Decode(cipherText);
     ByteData byteData = ByteData.sublistView(uint8list);
-    List<int> data = List<int>.generate(
-        byteData.lengthInBytes, (index) => byteData.getUint8(index));
+    List<int> data = List<int>.generate(byteData.lengthInBytes, (index) => byteData.getUint8(index));
     return ByteList(data);
   }
 
-  Map<String, dynamic> decryptChannelData(
-    Uint8List sharedSecret,
-    Map<String, dynamic> data,
-  ) =>
-      (channelDecryption ?? defaultChannelDecryptionHandler)(
-        sharedSecret,
-        data,
-      );
+  Map<String, dynamic> decryptChannelData(Uint8List sharedSecret, Map<String, dynamic> data) =>
+      (channelDecryption ?? defaultChannelDecryptionHandler)(sharedSecret, data);
 
-  Map<String, dynamic> defaultChannelDecryptionHandler(
-    Uint8List sharedSecret,
-    Map<String, dynamic> data,
-  ) {
+  Map<String, dynamic> defaultChannelDecryptionHandler(Uint8List sharedSecret, Map<String, dynamic> data) {
     if (!data.containsKey("ciphertext") || !data.containsKey("nonce")) {
       throw Exception(
         "Unexpected format for encrypted event, expected object with `ciphertext` and `nonce` fields, got: $data",
