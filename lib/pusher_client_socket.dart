@@ -1,5 +1,3 @@
-library pusher_client_socket;
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -131,7 +129,6 @@ class PusherClient {
         _connected = false;
         _socketId = null;
         break;
-      default:
     }
   }
 
@@ -220,7 +217,9 @@ class PusherClient {
         if (data is String) {
           try {
             data = jsonDecode(data);
-          } catch (e) {}
+          } catch (e) {
+            // Do nothing if the data is not a valid json
+          }
         }
 
         _onEvent(eventName, data, event["channel"]);
