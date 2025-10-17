@@ -1,3 +1,8 @@
+## 0.0.6 - 2025-10-17
+
+- Upgrade flutter sdk version.
+- Merge [Headers passed in as function instead of value](https://github.com/AbdoPrDZ/pusher_client_socket/pull/5) pull request.
+
 ## 0.0.5 - 2025-03-27
 
 - Upgrade flutter sdk version.
