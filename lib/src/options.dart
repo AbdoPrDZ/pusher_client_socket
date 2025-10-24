@@ -90,22 +90,24 @@ class PusherOptions {
       }
     } catch (e) {
       dev.log("Invalid host: $host", error: e);
+      hostUri = Uri(
+        scheme: encrypted ? 'wss' : 'ws',
+        host: cluster != null ? 'ws-$cluster.pusher.com' : 'ws.pusher.com',
+        port: encrypted ? wssPort : wsPort,
+      );
     }
 
-    return Uri(
-      scheme: hostUri?.scheme.isNotEmpty == true
-          ? hostUri!.scheme
-          : (encrypted ? 'wss' : 'ws'),
-      host: hostUri?.host.isNotEmpty == true
-          ? hostUri!.host
-          : (cluster != null ? 'ws-$cluster.pusher.com' : 'ws.pusher.com'),
-      port: hostUri?.port == 0 ? (encrypted ? wssPort : wsPort) : uri.port,
+    Uri finalUri = Uri(
+      scheme: hostUri.scheme,
+      host: hostUri.host,
+      port: hostUri.hasPort ? hostUri.port : (encrypted ? wssPort : wsPort),
       queryParameters: {
         ...parameters,
-        if (hostUri?.query.isNotEmpty == true) ...hostUri!.queryParameters,
+        if (hostUri.hasQuery) ...hostUri.queryParameters,
       },
       path: '/app/$key',
     );
+    return finalUri;
   }
 
   log(String level, [String? channel, String? message]) {
