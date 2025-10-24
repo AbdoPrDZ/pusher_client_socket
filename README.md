@@ -79,7 +79,8 @@ import 'package:pusher_client_socket/channels/presence_channel.dart';
      key: 'REVERB_APP_KEY',
      host: 'localhost', // REVERB_HOST
      wsPort: 6001, // REVERB_PORT
-     encrypted: false, // (Note: enable it if you'r using wss connection)
+     wsPath: '/app',
+     encrypted: false, // (Note: enable it if you're using wss connection)
      authOptions: PusherAuthOptions(
        endpoint: 'http://localhost/broadcasting/auth',
        headers: () async {
@@ -164,12 +165,13 @@ channel.unsubscribe();
 ## Pusher Client Options
 
 | Option                    | Type                                                                                | Description                                                                                                                                      |
-| ------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+|---------------------------|-------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 | `key`                     | `String`                                                                            | The Pusher app key used to authenticate the connection. This is a required parameter.                                                            |
 | `cluster`                 | `String?`                                                                           | The cluster of the Pusher server. If provided, it is used to construct the default WebSocket host.                                               |
 | `host`                    | `String?`                                                                           | The custom host for the connection. If not provided, it defaults to the Pusher WebSocket host based on the cluster.                              |
 | `wsPort`                  | `int`                                                                               | The ws port of the connection (default: 80).                                                                                                     |
 | `wssPort`                 | `int`                                                                               | The wss port of the connection (default: 443).                                                                                                   |
+| `wsPath`                  | `String`                                                                            | The path portion of the connection url (default: /app).                                                                                         |
 | `encrypted`               | `bool`                                                                              | A flag indicating whether to enable encrypted connection. Default is `false`.                                                                    |
 | `activityTimeout`         | `int`                                                                               | The activity timeout in milliseconds. This is the duration after which a ping is sent if no activity is detected. Default is 120000 (2 minutes). |
 | `pongTimeout`             | `int`                                                                               | The timeout in milliseconds for waiting for a pong response after a ping is sent. Default is 30000 (30 seconds).                                 |

@@ -22,6 +22,9 @@ class PusherOptions {
   /// The wss port of the connection (default: 443).
   final int wssPort;
 
+  /// The path portion of the connection (default: /app).
+  final String wsPath;
+
   /// Enable encryption for the connection.
   final bool encrypted;
 
@@ -64,6 +67,7 @@ class PusherOptions {
     this.host,
     this.wsPort = 80,
     this.wssPort = 443,
+    this.wsPath = '/app',
     this.encrypted = true,
     this.activityTimeout = 120000,
     this.pongTimeout = 30000,
@@ -105,7 +109,7 @@ class PusherOptions {
         ...parameters,
         if (hostUri.hasQuery) ...hostUri.queryParameters,
       },
-      path: '/app/$key',
+      path: '${wsPath}/${key}',
     );
     return finalUri;
   }
