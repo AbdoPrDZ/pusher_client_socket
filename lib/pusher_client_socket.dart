@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:pusher_client_socket/channels/channel.dart';
@@ -60,7 +59,10 @@ class PusherClient {
       __socket = null;
     }
 
-    __socket = WebSocket(options.uri);
+    __socket = WebSocket(
+      options.uri,
+      timeout: options.reconnectGap * options.maxReconnectionAttempts,
+    );
 
     _socket.connection.listen(_onConnectionStateChange);
 
@@ -107,7 +109,6 @@ class PusherClient {
       case Connected():
         _onEvent('connected', null);
         _resetActivityCheck();
-        _reconnectionAttempts = 0;
         break;
       case Reconnecting():
         _onEvent('reconnecting', null);
@@ -115,7 +116,6 @@ class PusherClient {
       case Reconnected():
         _onEvent('reconnected', null);
         _resetActivityCheck();
-        _reconnectionAttempts = 0;
         break;
       case Disconnecting():
         _onEvent('disconnecting', null);
@@ -136,21 +136,6 @@ class PusherClient {
     options.log("CONNECTION_ERROR", null, "error: $error");
 
     disconnect(1006, error.message);
-
-    if (error is SocketException) {
-      _reconnect();
-    }
-  }
-
-  int _reconnectionAttempts = 0;
-  void _reconnect() async {
-    if (_reconnectionAttempts < options.maxReconnectionAttempts) {
-      _reconnectionAttempts++;
-      await Future.delayed(options.reconnectGap);
-      connect();
-    } else {
-      disconnect(null, "Max reconnection attempts reached");
-    }
   }
 
   void _onConnectionEstablished(Map data) {
