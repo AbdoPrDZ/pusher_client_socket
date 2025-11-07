@@ -54,23 +54,13 @@ class PusherClient {
   String _stateName(ConnectionState state) {
     // Provide a readable name and additional details for Disconnected
     if (state is Disconnected) {
-      final code = state.code;
-      final reason = state.reason;
-      final error = state.error;
-      final buffer = StringBuffer('DISCONNECTED');
-      if (code != null) {
-        buffer.write(' (code: $code');
-      }
-      if (reason != null) {
-        buffer.write('${code != null ? ', ' : ' ('}reason: $reason');
-      }
-      if (code != null || reason != null) {
-        buffer.write(')');
-      }
-      if (error != null) {
-        buffer.write(' error: $error');
-      }
-      return buffer.toString();
+      final args = [
+        if (state.code != null) "code: ${state.code}",
+        if (state.reason != null && state.reason!.isNotEmpty)
+          "reason: ${state.reason}",
+        if (state.error != null) "error: ${state.error}",
+      ].join(", ");
+      return 'DISCONNECTED${args.isNotEmpty ? '($args)' : ''}';
     }
 
     if (state is Connecting) return 'CONNECTING';
