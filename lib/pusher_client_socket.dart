@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:pusher_client_socket/channels/channel.dart';
 import 'package:pusher_client_socket/src/channels.collection.dart';
 import 'package:pusher_client_socket/src/events_listeners.collection.dart';
+import 'package:pusher_client_socket/utils/connection_state.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
 import 'src/options.dart';
@@ -51,27 +52,6 @@ class PusherClient {
     throw Exception("The channel is not initialized yet");
   }
 
-  String _stateName(ConnectionState state) {
-    // Provide a readable name and additional details for Disconnected
-    if (state is Disconnected) {
-      final args = [
-        if (state.code != null) "code: ${state.code}",
-        if (state.reason != null && state.reason!.isNotEmpty)
-          "reason: ${state.reason}",
-        if (state.error != null) "error: ${state.error}",
-      ].join(", ");
-      return 'DISCONNECTED${args.isNotEmpty ? '($args)' : ''}';
-    }
-
-    if (state is Connecting) return 'CONNECTING';
-    if (state is Connected) return 'CONNECTED';
-    if (state is Reconnecting) return 'RECONNECTING';
-    if (state is Reconnected) return 'RECONNECTED';
-    if (state is Disconnecting) return 'DISCONNECTING';
-
-    return state.runtimeType.toString().toUpperCase();
-  }
-
   /// Connects the client to the server.
   void connect() {
     /// Close and reset web_socket connection (by @usmanabdulmajid)
@@ -105,12 +85,12 @@ class PusherClient {
     options.log(
       "CONNECTION_STATE_CHANGED",
       null,
-      "the connection state changed from ${_stateName(_connectionState)} to ${_stateName(state)}",
+      "the connection state changed from ${_connectionState.name} to ${state.name}",
     );
     _connectionState = state;
 
     /// Check if the client is connected (fixed by @usmanabdulmajid)
-    _connected = state is Connected || state is Reconnected;
+    _connected = state.isConnected;
 
     _onEvent("connection_state_changed", state);
 
