@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:pusher_client_socket/channels/channel.dart';
@@ -49,7 +48,28 @@ class PusherClient {
 
   WebSocket get _socket {
     if (__socket != null) return __socket!;
-    throw Exception("The channel does not initialized yet");
+    throw Exception("The channel is not initialized yet");
+  }
+
+  String _stateName(ConnectionState state) {
+    // Provide a readable name and additional details for Disconnected
+    if (state is Disconnected) {
+      final args = [
+        if (state.code != null) "code: ${state.code}",
+        if (state.reason != null && state.reason!.isNotEmpty)
+          "reason: ${state.reason}",
+        if (state.error != null) "error: ${state.error}",
+      ].join(", ");
+      return 'DISCONNECTED${args.isNotEmpty ? '($args)' : ''}';
+    }
+
+    if (state is Connecting) return 'CONNECTING';
+    if (state is Connected) return 'CONNECTED';
+    if (state is Reconnecting) return 'RECONNECTING';
+    if (state is Reconnected) return 'RECONNECTED';
+    if (state is Disconnecting) return 'DISCONNECTING';
+
+    return state.runtimeType.toString().toUpperCase();
   }
 
   /// Connects the client to the server.
@@ -60,7 +80,10 @@ class PusherClient {
       __socket = null;
     }
 
-    __socket = WebSocket(options.uri);
+    __socket = WebSocket(
+      options.uri,
+      timeout: options.reconnectGap * options.maxReconnectionAttempts,
+    );
 
     _socket.connection.listen(_onConnectionStateChange);
 
@@ -79,19 +102,10 @@ class PusherClient {
   }
 
   void _onConnectionStateChange(ConnectionState state) {
-    final states = {
-      const Connecting(): 'CONNECTING',
-      const Connected(): 'CONNECTED',
-      const Reconnecting(): 'RECONNECTING',
-      const Reconnected(): 'RECONNECTED',
-      const Disconnecting(): 'DISCONNECTING',
-      const Disconnected(): 'DISCONNECTED',
-    };
-
     options.log(
       "CONNECTION_STATE_CHANGED",
       null,
-      "the connection state changed from ${states[_connectionState]} to ${states[state]}",
+      "the connection state changed from ${_stateName(_connectionState)} to ${_stateName(state)}",
     );
     _connectionState = state;
 
@@ -107,7 +121,6 @@ class PusherClient {
       case Connected():
         _onEvent('connected', null);
         _resetActivityCheck();
-        _reconnectionAttempts = 0;
         break;
       case Reconnecting():
         _onEvent('reconnecting', null);
@@ -115,15 +128,14 @@ class PusherClient {
       case Reconnected():
         _onEvent('reconnected', null);
         _resetActivityCheck();
-        _reconnectionAttempts = 0;
         break;
       case Disconnecting():
         _onEvent('disconnecting', null);
         break;
-      case Disconnected():
+      case Disconnected(code: final _, reason: final _, error: final error):
         _onEvent('disconnected', state);
-        if (state.error != null) {
-          _onEvent("connection_error", state.error);
+        if (error != null) {
+          _onEvent("connection_error", error);
         }
         _stopActivityTimer();
         _connected = false;
@@ -136,21 +148,6 @@ class PusherClient {
     options.log("CONNECTION_ERROR", null, "error: $error");
 
     disconnect(1006, error.message);
-
-    if (error is SocketException) {
-      _reconnect();
-    }
-  }
-
-  int _reconnectionAttempts = 0;
-  void _reconnect() async {
-    if (_reconnectionAttempts < options.maxReconnectionAttempts) {
-      _reconnectionAttempts++;
-      await Future.delayed(options.reconnectGap);
-      connect();
-    } else {
-      disconnect(null, "Max reconnection attempts reached");
-    }
   }
 
   void _onConnectionEstablished(Map data) {
