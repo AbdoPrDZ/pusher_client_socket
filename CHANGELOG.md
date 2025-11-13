@@ -1,4 +1,4 @@
-## 0.0.7 - 2025-10-24
+## 0.0.7 - 2025-11-13
 
 - Merge [Refactor PusherOptions to improve URI construction and logging format](https://github.com/AbdoPrDZ/pusher_client_socket/pull/6) pull request.
 - Edit Package example script and improve it.
