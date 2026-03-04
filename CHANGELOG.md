@@ -1,6 +1,7 @@
 ## 0.0.8 - 2026-03-04
 
 - Upgrade flutter sdk version.
+- Upgrade packages versions.
 
 ## 0.0.7 - 2025-11-13
 
