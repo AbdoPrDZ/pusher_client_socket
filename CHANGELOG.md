@@ -1,3 +1,7 @@
+## 0.0.8 - 2026-03-04
+
+- Upgrade flutter sdk version.
+
 ## 0.0.7 - 2025-11-13
 
 - Merge [Refactor PusherOptions to improve URI construction and logging format](https://github.com/AbdoPrDZ/pusher_client_socket/pull/6) pull request.
