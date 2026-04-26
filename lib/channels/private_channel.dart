@@ -71,7 +71,8 @@ class PrivateChannel extends Channel {
       client.sendEvent("pusher:subscribe", {
         "channel": name,
         "auth": authData!.auth,
-        "channel_data": authData!.channelData?.toJsonString(),
+        "channel_data":
+            authData!.rawChannelData ?? authData!.channelData?.toJsonString(),
       });
       // } catch (e) {
       //   handleEvent("pusher:error", e);
